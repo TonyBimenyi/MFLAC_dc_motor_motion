@@ -2,33 +2,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # step factors initialization
-rho = 0.00007
-eta = 0.5
+rho = 0.6
+eta = 1
 
 # input difference
 epsilon = 10**(-5)
 
 # weighing factors initialization
-lambda_ = 0.1
+lambda_ = 2
 mu = 1
 
 # input initialization
-u = np.zeros((500, 1))
+u = np.zeros((1000, 1))
 
 # parameter initialization
-phi = np.zeros((500, 1))
-phi[0] = 0.5
-phi[1] = 0.5
+phi = np.zeros((1000, 1))
+phi[0] = 2
+phi[1] = 2
 
 # System Dynamics initialization
-y = np.zeros((1001, 1))  # Increase the size of y array by 1
+y = np.zeros((1000, 1))
 y[0] = -1
 y[1] = 1
 
 # Trajectory initilization
 yt = np.zeros((1001, 1))
 
-for k in range(500):
+for k in range(1000):
     
     # Trajectory
     if k <= 300:
@@ -50,12 +50,10 @@ for k in range(500):
         u[k] = u[k-1] + (rho*phi[k]/(lambda_+np.linalg.norm(phi[k])**2))*(yt[k+1]-y[k])
     
     # System Dynamics
-    if 1 <= k <= 499:  
+    if 1 <= k <= 500:
         y[k+1] = (y[k]/(1+(y[k])**2))+(u[k]**3)
-    elif k >= 500:  
+    elif k > 500:
         y[k+1] = (y[k]*y[k-1]*y[k-2]*u[k-1]*(y[k-2]-1)+round(k/500)*u[k])/(1+(y[k-1]**2)+(y[k-2]**2))
-
-
 
 plt.plot(yt[1:], '--r')
 plt.plot(y)
