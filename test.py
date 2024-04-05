@@ -25,6 +25,22 @@ y = np.zeros((1000, 1))
 # Define time array with offset (adjusted for plotting)
 time_plot = np.arange(0, 1000)  # This creates an array from 0 to 999
 
+
+#DC Motor Parameters
+
+Ra = 0.04  # Armature resistance (Ω)
+J = 1.2  # Inertia (kg*m^2)
+La = 0.006  # Armature inductance (H)
+k = 0.245  # Motor constant (Nm/A^2)
+B = 0.00006  # Damping coefficient (kg*m^2/s)
+Lf = 1.0  # Field inductance constant
+Tl = 25.0  # Load torque (N)
+omega_ref = 200.0  # Motor speed reference (rad/s)
+
+def Te(ifield,iarm):
+    return k * ifield * iarm
+
+
 # Loop with time adjustment
 for t in range(1000):
      # Use actual time for calculations (t-2)
@@ -43,25 +59,38 @@ for t in range(1000):
     if t >= 2:
         # Check if t+1 is within bounds for ystar
         if t + 1 < 1000:
-            u[t] = u[t-1] = ((rho * phi[t]) / lamda + np.linalg.norm(phi[t])**2) * (ystar[t+1] - y[t])
+            u[t] = u[t-1] = ((rho * phi[t]) / ((lamda) + (np.linalg.norm(phi[t]))**2)) * (ystar[t+1] - y[t])
 
         else:
         # Handle the case when t+1 is out of bounds
             u[t] = ((rho * phi[t]) / lamda + phi[t]**2) * (ystar[t+1] - y[t])
-    
+
+    #DC Motor 
+
+    if(t >= 2):
+       
 
 
 
 
 # Plotting with adjusted time labels
-plt.plot(u, '-g')  # Use time_plot for x-axis
-plt.title('Input u over time')
-plt.xlabel('Sampling instant(s/s)')
-plt.ylabel('Controller(V)')
-plt.grid(True)
+# plt.figure(1)
+# plt.plot(u, '-g')  # Use time_plot for x-axis
+# plt.plot(phi,'--r')
+# plt.legend(['input'])
+# plt.xlabel('Sampling instant(s/s)')
+# plt.ylabel('Controller(V)')
+# plt.grid(True)
 
 # Set x-axis limits to clearly show 0 to 2 range
 # plt.xlim(0, 2)
 # plt.ylim(0, 60)
 
 plt.show()
+
+plt.figure(2)
+plt.plot(wref)
+plt.xlabel('Sampling instant(s/s)')
+plt.ylabel('Rotate speed')
+plt.show()
+plt.grid(True)
