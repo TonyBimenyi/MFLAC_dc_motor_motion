@@ -35,8 +35,8 @@ for t in range(1000):
       
        phi[t] = (phi[t-1]) + ((eta*u[t-1]/mu+u[t-1**2])) * (y[t]-phi[t-1] * u[t-1]) 
 
-       if abs(phi[t]) <= epsilon or abs(u[t-1]-u[t-2]) <= epsilon or np.sign(phi[t]) != np.sign(phi[0]):
-            phi[t] = phi[0]
+       if (phi[t]) <= epsilon or abs(u[t-1]) <= epsilon:
+            phi[t] = phi[1]
 
 
     #input
@@ -54,10 +54,10 @@ for t in range(1000):
 
 
 # Plotting with adjusted time labels
-plt.plot(u)  # Use time_plot for x-axis
+plt.plot(u, '-g')  # Use time_plot for x-axis
 plt.title('Input u over time')
-plt.xlabel('Time')
-plt.ylabel('Value of u')
+plt.xlabel('Sampling instant(s/s)')
+plt.ylabel('Controller(V)')
 plt.grid(True)
 
 # Set x-axis limits to clearly show 0 to 2 range
