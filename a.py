@@ -1,87 +1,45 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mfac.plants.siso import Model1
+from mfac.controllers import CompactFormDynamicLinearization
 
-# Constants
-Ra = 0.04  # Armature resistance (Ω)
-J = 1.2  # Inertia (kg*m^2)
-La = 0.006  # Armature inductance (H)
-k = 0.245  # Motor constant (Nm/A^2)
-B = 0.00006  # Damping coefficient (kg*m^2/s)
-Lf = 1.0  # Field inductance constant
-TL = 25.0  # Load torque (N)
-omega_ref = 200.0  # Motor speed reference (rad/s)
+# define the model and set the initial values
+model = Model1(initial_state=np.array([0]))
 
-# Time parameters
-t_start = 0
-t_end = 10
-dt = 0.01
-time = np.arange(t_start, t_end, dt)
+# Simulation conditions
+total_time = 90
+step_time = 0.01
 
-# Define the equations
-def Te(ifield, iarm):
-    return k * ifield * iarm
+# Desired output (y_desire)
+y_d = np.zeros(int(total_time / step_time) + 1)
+for k in range(int(total_time / step_time) + 1):
+    y_d[k] = 0.5 + 0.5*np.power(-1, np.round(k/200))
 
-def E(ifield, omega):
-    return k * ifield * omega
+# log function which will be ran after each iteration
+def log_function(cfdl):
+    print('iteration: ', cfdl.iteration)
 
-def difdt(uf, ifield):
-    return (1 / Lf) * (uf - Ra * ifield)
+# define the controller
+controller = CompactFormDynamicLinearization(model=model,
+                                             iteration_function=log_function,
+                                             time_step=step_time,
+                                             reference_output=y_d,
+                                             simulation_time=total_time,
+                                             labda=1,
+                                             eta=1,
+                                             mu=1,
+                                             rho=0.45,
+                                             )
 
-def dwdt(Te, TL):
-    return (1 / J) * (Te - TL)
+# run the simulation
+controller.run()
 
-# Initial conditions
-ifield_0 = 1.0  # Initial field current
-omega_0 = 0.0  # Initial motor speed
-Te_0 = Te(ifield_0, ifield_0)
-E_0 = E(ifield_0, omega_0)
-
-# Initialize arrays to store results
-ifield_values = np.zeros_like(time)
-omega_values = np.zeros_like(time)
-Te_values = np.zeros_like(time)
-E_values = np.zeros_like(time)
-
-# Simulate the system
-ifield_values[0] = ifield_0
-omega_values[0] = omega_0
-Te_values[0] = Te_0
-E_values[0] = E_0
-
-for i in range(1, len(time)):
-    Te_values[i] = Te(ifield_values[i-1], ifield_values[i-1])
-    E_values[i] = E(ifield_values[i-1], omega_values[i-1])
-    difdt_val = difdt(Te_values[i-1], ifield_values[i-1])
-    dwdt_val = dwdt(Te_values[i-1], TL)
-    ifield_values[i] = ifield_values[i-1] + difdt_val * dt
-    omega_values[i] = omega_values[i-1] + dwdt_val * dt
-
-# Plot the results
-plt.figure(figsize=(10, 6))
-
-plt.subplot(2, 2, 1)
-plt.plot(time, ifield_values)
-plt.title('Field Current vs Time')
-plt.xlabel('Time')
-plt.ylabel('Field Current')
-
-plt.subplot(2, 2, 2)
-plt.plot(time, omega_values)
-plt.title('Motor Speed vs Time')
-plt.xlabel('Time')
-plt.ylabel('Motor Speed')
-
-plt.subplot(2, 2, 3)
-plt.plot(time, Te_values)
-plt.title('Developed Torque vs Time')
-plt.xlabel('Time')
-plt.ylabel('Developed Torque')
-
-plt.subplot(2, 2, 4)
-plt.plot(time, E_values)
-plt.title('Back EMF vs Time')
-plt.xlabel('Time')
-plt.ylabel('Back EMF')
-
-plt.tight_layout()
+# plot the output
+fig, ax = plt.subplots()
+ax.plot(model.Y)
+ax.plot(y_d)
+ax.set(xlabel='time (t)', ylabel='output (y)',
+       title='system output')
+ax.grid()
+# fig.savefig("test.png")
 plt.show()

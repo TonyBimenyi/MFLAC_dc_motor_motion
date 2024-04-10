@@ -57,6 +57,7 @@ for k in range(1000):
 
 plt.plot(yt[1:], '--r')
 plt.plot(y)
+plt.plot(u, -k)
 plt.title('SISO CFDL MFAC Trajectory Tracking')
 plt.legend(['trajectory', 'tracking'])
 plt.show()

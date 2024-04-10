@@ -30,13 +30,13 @@ yt = np.zeros((1001, 1))
 
 for k in range(1000):
     
-    # # Trajectory
-    # if k <= 300:
-    #     yt[k+1] = 0.5 * (-1)**(round(k/500))
-    # elif 300 < k <= 700:
-    #     yt[k+1] = 0.5 * np.sin(k*np.pi/100) + 0.3 * np.cos(k*np.pi/50)
-    # else:
-    #     yt[k+1] = 0.5 * (-1)**(round(k/500))
+    # Trajectory
+    if k <= 300:
+        yt[k+1] = 0.5 * (-1)**(round(k/500))
+    elif 300 < k <= 700:
+        yt[k+1] = 0.5 * np.sin(k*np.pi/100) + 0.3 * np.cos(k*np.pi/50)
+    else:
+        yt[k+1] = 0.5 * (-1)**(round(k/500))
       
     # Parameter Estimate
     if k >= 2:
