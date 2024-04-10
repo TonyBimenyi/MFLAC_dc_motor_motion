@@ -23,6 +23,7 @@ u[1] = 1
 
 yt = np.zeros((1001, 1))
 y = np.zeros((1001, 1))
+e = np.zeros((1001, 1))
 y[0] = 0
 y[1] = 0
 # Define time array with offset (adjusted for plotting)
@@ -48,14 +49,15 @@ def model(u,ddtheta,i):
     return di 
 
 
-for k in range(1000):
+for k in range(1001):
      # Trajectory
-    if k <= 500:
-        yt[k+1] = 125 * (-1)**(round(k/100))
-    elif 500 < k <= 700:
-        yt[k+1] = 125 * np.sin(k*np.pi/100) + 0.3 * np.cos(k*np.pi/50)
-    else:
-        yt[k+1] = 125* (-1)**(round(k/500))
+    # if k <= 500:
+    #     yt[k+1] = 125 * (-1)**(round(k/100))
+    # elif 500 < k <= 700:
+    #     yt[k+1] = 125 * np.sin(k*np.pi/100) + 0.3 * np.cos(k*np.pi/50)
+    # else:
+    #     yt[k+1] = 125* (-1)**(round(k/500))
+    yt[k]=30*np.sin(0.02*k)+140
 
 
 # Loop with time adjustment
@@ -70,12 +72,12 @@ for k in range(1000):
     if k==0 :
         phi[0]=1
     elif k == 1:
-       phi[1] = phi[k-1] + ((eta*(u[k-1]-0)) / (mu + (u[k-1]-0)**2)) * (y[k]-y[k-1] - phi[k-1]*(u[k-1]-0))
+       phi[k] = phi[k-1] + ((eta*(u[k-1]-0)) / (mu + (u[k-1]-0)**2)) * (y[k]-y[k-1] - phi[k-1]*(u[k-1]-0))
     else:
        phi[k] = phi[k-1] + ((eta*(u[k-1]-u[k-2])) / (mu + (u[k-1]-u[k-2])**2)) * (y[k]-y[k-1] - phi[k-1]*(u[k-1]-u[k-2]))
 
-    if (phi[k]) <= epsilon or abs(u[k-1]-u[k-2]) <= epsilon:
-        phi[k] = phi[1]
+    # if (phi[k]) <= epsilon or abs(u[k-1]-u[k-2]) <= epsilon:
+    #     phi[k] = phi[1]
 
 
     #input 
@@ -96,7 +98,7 @@ for k in range(1000):
     # if k >= 2:
     #y[k+1] = (y[k] /  (1 + y[k]**2)) + 5*u[k]
     y[k+1] = model(u[k],5,2)
-    
+    e[k+1] = yt[k+1] - y[k+1]
 
 
 
@@ -174,4 +176,11 @@ plt.plot(u,'-g')  # Use time_plot for x-axis
 # plt.ylabel('Rotate speed')
 
 # plt.grid(True)
+plt.show()
+plt.figure(3)
+plt.plot(e,'-g') 
+plt.show()
+
+plt.figure(4)
+plt.plot(phi,'-r') 
 plt.show()
