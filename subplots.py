@@ -5,27 +5,36 @@ import matplotlib.pyplot as plt
 rho = 0.01
 eta = 0.01
 lamda = 1
+mu = 1
 
 # input difference
 epsilon = 10**(-5)
 
-# Define phi and ystar as arrays
+# Define phi  as arrays
 phi = np.zeros((1000, 1))
 phi[0] = 1
 phi[1] = 1
-mu = 1
+
 
 # Input initializations
 u = np.zeros((1000, 1))
 u[0] = 1
 u[1] = 1
 
+# Definition of  yt and y  as arrays
 
 yt = np.zeros((1001, 1))
 y = np.zeros((1001, 1))
-e = np.zeros((1001, 1))
 y[0] = 0
 y[1] = 0
+
+e = np.zeros((1001, 1))
+
+
+noise = np.zeros((1001, 1))
+noise[0] = 0
+noise[0] = 0
+
 # Define time array with offset (adjusted for plotting)
 time_plot = np.arange(0, 1000)  # This creates an array from 0 to 999
 
@@ -43,6 +52,8 @@ omega_ref = 200.0  # Motor speed reference (rad/s)
 # ua = 20
 delta  = 3
 
+
+#Definition of DC Motor Model
 def model(u,ddtheta,i):
     ddtheta = (-B/J)*ddtheta+(k_/J)*i
     di = (-k_/La)*ddtheta-(Ra/La)*i + u/La
@@ -50,7 +61,7 @@ def model(u,ddtheta,i):
 
 
 for k in range(1001):
-     # Trajectory
+     # Trackinng Trajectory
     # if k <= 500:
     #     yt[k+1] = 125 * (-1)**(round(k/100))
     # elif 500 < k <= 700:
@@ -97,59 +108,50 @@ for k in range(1000):
     #if 1 <= k <= 499 :
     # if k >= 2:
     #y[k+1] = (y[k] /  (1 + y[k]**2)) + 5*u[k]
+
+    #Output signal 
     y[k+1] = model(u[k],5,2)
+
+    #error 
     e[k+1] = yt[k+1] - y[k+1]
 
+    noise[k+1] = np.random.normal(model(u[k],5,2))
+    # print(noise[:10])
 
 
+#Create_subplots
+
+fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+fig1 = axs[0,0]
+fig2 = axs[0,1]
+fig3 = axs[1,0]
+fig4 = axs[1,1]
+
+#plot each data on its corresponding subplot
+fig1.plot(yt,'-r')
+fig1.plot(y,'--k')
+fig1.legend(['tracking trajectory(yt)','System output Signal(y)'])
+# fig1.xlabel('Time(s)')
+
+fig2.plot(u,'og',markersize=1)
+fig2.legend(['Input(u)'])
+fig2.grid(True)
+
+fig3.plot(e,'-y')
+fig3.legend(['error(e)'])
+fig3.grid(True)
+
+fig4.plot(noise,'-r')
+fig4.legend(['Disturbance'])
+fig4.grid(True)
 
 
-#    for u, ddtheta, i in range (1000) :
+# Adjust layout to prevent overlap
+plt.tight_layout()
+fig1.grid(True)
 
-#        ddtheta_values = model(u,ddtheta, i)
-    
-
-
-    #  System Dynamics
-    # if 1 <= t <= 499:  
-    #     y[k+1] = (y[k]/(1+(y[k])**2))+(u[k]**3)
-    # elif k >= 500:  
-    #     y[k+1] = (y[k]*y[k-1]*y[k-2]*u[k-1]*(y[k-2]-1)+round(t/500)*u[k])/(1+(y[k-1]**2)+(y[k-2]**2))
-    #DC Motor 
-
-    # def motor_speed(t):
-    #     if k >= 2:
-    #         tf = k / ((J + B) * (La + Ra) + k**2)
-    #         s = tf
-    #         return (k * omega_ref) / ((J*s + Ra) * (La*s + Ra) + k**2)
-    #     else:
-    #             return 0  # Return 0 for k < 2
-        
-
-
-        # def Te(ifield,iarm):
-        #     return K * ifield * iarm
-
-        # def E(ifield):
-        #  return k * ifield * omega_ref
-
-        # K = k * Lf
-
-        # def dia_dt(ua,ia):
-        #     (1/La) * (ua - Ra * ia - E)
-
-        # def dif_dt(uf,Rf, ifield):
-        #     (1/Lf) * (uf - Rf * ifield)
-
-        # domega_dt = (1/J) * ((Te) - (Tl))
-        # print(motor_speed)
-    # Define time array
-# t_values = np.linspace(0, 10, 1000)  # Adjust time range as needed
-
-# # Calculate motor speed for each time value
-# motor_speed_values = [motor_speed(t) for k in t_values]
-
-
+# Display the plots
+plt.show()
 
 
 # Plotting with adjusted time labels
