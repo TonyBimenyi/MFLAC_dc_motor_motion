@@ -125,7 +125,7 @@ fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 fig1 = axs[0,0]
 fig2 = axs[0,1]
 fig3 = axs[1,0]
-fig4 = axs[1,1]
+# fig4 = axs[1,1]
 
 #plot each data on its corresponding subplot
 fig1.plot(yt,'-r')
@@ -141,9 +141,9 @@ fig3.plot(e,'-y')
 fig3.legend(['error(e)'])
 fig3.grid(True)
 
-fig4.plot(noise,'-r')
-fig4.legend(['Disturbance'])
-fig4.grid(True)
+# fig4.plot(noise,'-r')
+# fig4.legend(['Disturbance'])
+# fig4.grid(True)
 
 
 # Adjust layout to prevent overlap
